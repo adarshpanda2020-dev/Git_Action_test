@@ -58,10 +58,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Start server and test /weather endpoint
+      - name: Start server and test endpoints
         run: |
           python main.py &
           SERVER_PID=$!
           sleep 3
+          curl --fail --retry 3 --retry-delay 2 http://localhost:8080/
+          curl --fail --retry 3 --retry-delay 2 http://localhost:8080/health/detail
           curl --fail --retry 3 --retry-delay 2 http://localhost:8080/weather
           kill $SERVER_PID
