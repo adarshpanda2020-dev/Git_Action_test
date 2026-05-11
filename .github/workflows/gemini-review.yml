@@ -20,12 +20,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read review prompt
+      - name: Build review prompt with diff
         id: prompt
         run: |
           {
             echo 'content<<PROMPT_EOF'
             cat .github/prompts/gemini-review.md
+            echo ""
+            echo "Here is the pull request diff to review:"
+            echo '```diff'
+            git diff origin/main...HEAD
+            echo '```'
             echo 'PROMPT_EOF'
           } >> "$GITHUB_OUTPUT"
 
