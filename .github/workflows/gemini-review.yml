@@ -31,7 +31,7 @@ jobs:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           use_vertex_ai: true
-          gemini_model: gemini-2.5-flash-preview-05-20
+          gemini_model: gemini-2.5-flash
           prompt: |
             Act as a Senior Python Engineer. Review the diff of this Pull Request.
             Summarize the changes, check for logic errors, and verify if new imports
