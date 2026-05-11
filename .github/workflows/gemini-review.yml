@@ -23,6 +23,8 @@ jobs:
 
       - name: Run Gemini PR Review
         uses: google-github-actions/run-gemini-cli@v0
+        env:
+          GEMINI_CLI_TRUST_WORKSPACE: 'true'
         with:
           gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
           gcp_location: europe-west1
