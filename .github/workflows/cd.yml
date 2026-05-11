@@ -53,3 +53,4 @@ jobs:
           service: git-action-test
           region: europe-west1
           image: ${{ needs.build.outputs.image }}
+          flags: --ingress=internal-and-cloud-load-balancing
