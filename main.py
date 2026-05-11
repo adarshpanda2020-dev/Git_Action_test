@@ -1,6 +1,6 @@
 # Author: Claude Developer Agent
 # Description: Flask weather service exposing London weather via Open-Meteo API.
-# Endpoints: / (health), /weather (current conditions), /health/detail (service info)
+# Endpoints: / (health), /weather (current conditions), /health/detail (service info), /forecast (3-day)
 
 import os
 import platform
@@ -13,10 +13,10 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 # Service metadata — bumped on each deployment
-SERVICE_VERSION = "1.1.0"
+SERVICE_VERSION = "1.2.0"
 SERVICE_START_TIME = datetime.now(timezone.utc).isoformat()
 
-print('Hello World - v4 for testing e2e cicd with Gemini embedded')
+print('Hello World - v5 — adding 3-day forecast endpoint')
 
 
 def get_london_weather():
@@ -66,11 +66,49 @@ def health_detail():
     })
 
 
+def get_london_forecast():
+    # Fetches the next 3 days of daily max/min temperature and weather code for London.
+    url = "https://api.open-meteo.com/v1/forecast"
+    params = {
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "daily": "temperature_2m_max,temperature_2m_min,weathercode",
+        "timezone": "Europe/London",
+        "forecast_days": 3,
+    }
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    daily = response.json()["daily"]
+    descriptions = {
+        0: "Clear sky", 1: "Mainly clear", 2: "Partly cloudy", 3: "Overcast",
+        45: "Foggy", 48: "Icy fog", 51: "Light drizzle", 53: "Drizzle",
+        55: "Heavy drizzle", 61: "Slight rain", 63: "Rain", 65: "Heavy rain",
+        71: "Slight snow", 73: "Snow", 75: "Heavy snow", 80: "Rain showers",
+        95: "Thunderstorm",
+    }
+    return [
+        {
+            "date": daily["time"][i],
+            "max_temp_c": daily["temperature_2m_max"][i],
+            "min_temp_c": daily["temperature_2m_min"][i],
+            "description": descriptions.get(daily["weathercode"][i], f"Code {daily['weathercode'][i]}"),
+        }
+        for i in range(3)
+    ]
+
+
 @app.route("/weather")
 def weather():
     # Returns current London weather conditions as JSON.
     data = get_london_weather()
     return jsonify({"city": "London", **data})
+
+
+@app.route("/forecast")
+def forecast():
+    # Returns a 3-day daily forecast for London.
+    days = get_london_forecast()
+    return jsonify({"city": "London", "forecast": days})
 
 
 if __name__ == "__main__":
