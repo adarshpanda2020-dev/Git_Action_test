@@ -21,16 +21,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Authenticate to Google Cloud via WIF
-        uses: google-github-actions/auth@v2
-        with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
       - name: Run Gemini PR Review
         uses: google-github-actions/run-gemini-cli@v0
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          gcp_project_id: ${{ secrets.GCP_PROJECT_ID }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          use_vertex_ai: true
           prompt: |
             Act as a Senior Python Engineer. Review the diff of this Pull Request.
             Summarize the changes, check for logic errors, and verify if new imports
