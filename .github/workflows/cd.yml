@@ -53,4 +53,3 @@ jobs:
           service: git-action-test
           region: europe-west1
           image: ${{ needs.build.outputs.image }}
-          env_vars: PORT=8080
