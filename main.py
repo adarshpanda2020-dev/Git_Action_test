@@ -1,6 +1,7 @@
 # Author: Claude Developer Agent
 # Description: Flask weather service exposing London weather via Open-Meteo API.
 # Endpoints: / (health), /weather (current conditions), /health/detail (service info), /forecast (3-day)
+# Change: temperatures now returned in both Celsius and Fahrenheit
 
 import os
 import platform
@@ -13,7 +14,7 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 # Service metadata — bumped on each deployment
-SERVICE_VERSION = "1.2.0"
+SERVICE_VERSION = "1.3.0"
 SERVICE_START_TIME = datetime.now(timezone.utc).isoformat()
 
 print('Hello World - v5 — adding 3-day forecast endpoint')
@@ -45,7 +46,8 @@ def get_london_weather():
         95: "Thunderstorm",
     }
     description = descriptions.get(code, f"Weather code {code}")
-    return {"description": description, "temperature_c": temp, "wind_kmh": wind}
+    temp_f = round(temp * 9 / 5 + 32, 1)
+    return {"description": description, "temperature_c": temp, "temperature_f": temp_f, "wind_kmh": wind}
 
 
 @app.route("/")
@@ -90,7 +92,9 @@ def get_london_forecast():
         {
             "date": daily["time"][i],
             "max_temp_c": daily["temperature_2m_max"][i],
+            "max_temp_f": round(daily["temperature_2m_max"][i] * 9 / 5 + 32, 1),
             "min_temp_c": daily["temperature_2m_min"][i],
+            "min_temp_f": round(daily["temperature_2m_min"][i] * 9 / 5 + 32, 1),
             "description": descriptions.get(daily["weathercode"][i], f"Code {daily['weathercode'][i]}"),
         }
         for i in range(3)
