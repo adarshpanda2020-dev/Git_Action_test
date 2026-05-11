@@ -1,0 +1,37 @@
+name: Gemini AI PR Review
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  gemini-review:
+    name: Gemini Code Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate to Google Cloud via WIF
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Run Gemini PR Review
+        uses: google-github-actions/run-gemini-cli@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          prompt: |
+            Act as a Senior Python Engineer. Review the diff of this Pull Request.
+            Summarize the changes, check for logic errors, and verify if new imports
+            are present in requirements.txt.
