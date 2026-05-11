@@ -1,6 +1,6 @@
 import requests
 
-print('Hello World')
+print('Hello World - v2 for testing cicd')
 
 def get_london_weather():
     url = "https://api.open-meteo.com/v1/forecast"
