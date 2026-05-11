@@ -20,12 +20,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read review prompt
+      - name: Build review prompt with diff
         id: prompt
         run: |
           {
             echo 'content<<PROMPT_EOF'
             cat .github/prompts/gemini-review.md
+            echo ""
+            echo "Here is the pull request diff to review:"
+            echo '```diff'
+            git diff origin/main...HEAD
+            echo '```'
             echo 'PROMPT_EOF'
           } >> "$GITHUB_OUTPUT"
 
@@ -67,4 +72,5 @@ jobs:
           curl --fail --retry 3 --retry-delay 2 http://localhost:8080/health/detail
           curl --fail --retry 3 --retry-delay 2 http://localhost:8080/weather
           curl --fail --retry 3 --retry-delay 2 http://localhost:8080/forecast
+          curl --fail --retry 3 --retry-delay 2 http://localhost:8080/forecast/summary
           kill $SERVER_PID

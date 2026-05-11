@@ -13,10 +13,10 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 # Service metadata — bumped on each deployment
-SERVICE_VERSION = "1.2.0"
+SERVICE_VERSION = "1.3.0"
 SERVICE_START_TIME = datetime.now(timezone.utc).isoformat()
 
-print('Hello World - v5 — adding 3-day forecast endpoint')
+print('Hello World - v6 — adding forecast summary endpoint')
 
 
 def get_london_weather():
@@ -109,6 +109,14 @@ def forecast():
     # Returns a 3-day daily forecast for London.
     days = get_london_forecast()
     return jsonify({"city": "London", "forecast": days})
+
+
+@app.route("/forecast/summary")
+def forecast_summary():
+    # Returns a single human-readable sentence summarising the 3-day outlook.
+    days = get_london_forecast()
+    lines = [f"{d['date']}: {d['description']}, {d['min_temp_c']}–{d['max_temp_c']}°C" for d in days]
+    return jsonify({"city": "London", "summary": " | ".join(lines)})
 
 
 if __name__ == "__main__":
