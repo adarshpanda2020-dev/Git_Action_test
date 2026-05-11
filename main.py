@@ -1,6 +1,11 @@
+import os
 import requests
+from flask import Flask, jsonify
+
+app = Flask(__name__)
 
 print('Hello World - v2 for testing cicd')
+
 
 def get_london_weather():
     url = "https://api.open-meteo.com/v1/forecast"
@@ -26,7 +31,20 @@ def get_london_weather():
         95: "Thunderstorm",
     }
     description = descriptions.get(code, f"Weather code {code}")
+    return {"description": description, "temperature_c": temp, "wind_kmh": wind}
 
-    print(f"Current weather in London: {description}, {temp}°C, wind {wind} km/h")
 
-get_london_weather()
+@app.route("/")
+def health():
+    return jsonify({"status": "ok"})
+
+
+@app.route("/weather")
+def weather():
+    data = get_london_weather()
+    return jsonify({"city": "London", **data})
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
