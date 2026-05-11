@@ -4,7 +4,7 @@ from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-print('Hello World - v2 for testing cicd')
+print('Hello World - v3 for testing cicd')
 
 
 def get_london_weather():
