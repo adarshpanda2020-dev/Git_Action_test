@@ -16,7 +16,7 @@ app = Flask(__name__)
 SERVICE_VERSION = "1.1.0"
 SERVICE_START_TIME = datetime.now(timezone.utc).isoformat()
 
-print('Hello World - v3 for testing cicd')
+print('Hello World - v4 for testing e2e cicd with Gemini embedded')
 
 
 def get_london_weather():
